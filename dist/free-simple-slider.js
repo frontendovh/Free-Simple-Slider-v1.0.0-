@@ -51,7 +51,7 @@ $(document).ready(function () {
                 }
 
 
-                // ==== ADD ARROWS ==== 
+                // ==== ADD ARROWS ====
                 if (settings.arrows === true) {
                     self.after('<a class="arrows prev-arrow" href="#"><img src="img/angle-left.svg" alt=""></a><a class="arrows next-arrow" href="#"><img src="img/angle-right.svg" alt=""></a>');
                 }
@@ -74,137 +74,140 @@ $(document).ready(function () {
 
 
                 // ==== CHANGE SLIDES FUNCTION ==== function with slider animation
-                var changeSlides = (function (normalDirection) {
+                if (slideLength > 1) {
+                    var changeSlides = (function (normalDirection) {
 
-                    var current = self.children('li.current');
-                    var currentIndex = self.children('li.current').index();
-                    var nextDot;
-                    var currentDot = dotsContainer.children('li.current');
+                        var current = self.children('li.current');
+                        var currentIndex = self.children('li.current').index();
+                        var nextDot;
+                        var currentDot = dotsContainer.children('li.current');
 
-                    //==== Direction of changing slides ====
-                    var next;
-                    if (normalDirection === false) {
-                        next = self.children('li').eq(currentIndex - 1);
+                        //==== Direction of changing slides ====
+                        var next;
+                        if (normalDirection === false) {
+                            next = self.children('li').eq(currentIndex - 1);
 
-                        if (currentIndex - 1 < 0) {
-                            next = self.children('li:last');
+                            if (currentIndex - 1 < 0) {
+                                next = self.children('li:last');
+                            }
+
+                        } else {
+                            next = self.children('li').eq(currentIndex + 1);
+                            if (currentIndex + 1 === slideLength) {
+                                next = self.children('li:first');
+                            }
                         }
 
-                    } else {
-                        next = self.children('li').eq(currentIndex + 1);
-                        if (currentIndex + 1 === slideLength) {
-                            next = self.children('li:first');
-                        }
-                    }
 
-
-                    // ==== ANIMATION BASIC ====
-                    if (settings.animation === "basic") {
-                        next.addClass('current');
-                        current.removeClass('current');
-                    }
-
-                    // ==== ANIMATION FADE IN/OUT ====
-                    if (settings.animation === "fade") {
-                        next.addClass('current');
-                        current.removeClass('current').addClass('prev');
-                        setTimeout(function () {
-                            self.children('li.prev').removeClass('prev');
-                        }, 500);
-                    }
-
-                    // ==== ANIMATION SLIDE ====
-                    if (settings.animation === "slide") {
-                        next.addClass('current');
-                        current.removeClass('current').addClass('prev');
-                        setTimeout(function () {
-                            self.children('li.prev').removeClass('prev');
-                        }, 250);
-                    }
-
-
-
-                    //==== DOTS CHANGE ====
-                    if (settings.dots === true) {
-                        nextDot = dotsContainer.children('li').eq(next.index());// next.index() <- allows to use the same logic as in slides change
-                        currentDot.removeClass('current');
-                        nextDot.addClass('current');
-                    }
-
-                });
-
-                // ==== FIRE FUNCTION INTERWAL startChangeSlides()==== fires "changeSlides" function after time which is set in timer variable
-                var interval;
-                function startChangeSlides() {
-                    interval = setInterval(function () {
-                        changeSlides(true);
-                    }, timer);
-                }
-                startChangeSlides();
-
-                // ==== DOT NAVIGATION ==== changing slide with choose animation after click on dot navigation
-                if (settings.dots === true) {
-                    dotsContainer.children('li').on("click", function () {
-
-                        clearInterval(interval);
-                        dotsContainer.children('li').removeClass('current');
-
+                        // ==== ANIMATION BASIC ====
                         if (settings.animation === "basic") {
-                            self.children('li').removeClass('current');
+                            next.addClass('current');
+                            current.removeClass('current');
                         }
 
+                        // ==== ANIMATION FADE IN/OUT ====
                         if (settings.animation === "fade") {
-                            self.children('li.current').addClass('prev').removeClass('current');
+                            next.addClass('current');
+                            current.removeClass('current').addClass('prev');
                             setTimeout(function () {
                                 self.children('li.prev').removeClass('prev');
                             }, 500);
                         }
 
+                        // ==== ANIMATION SLIDE ====
                         if (settings.animation === "slide") {
-                            self.children('li.current').addClass('prev').removeClass('current');
+                            next.addClass('current');
+                            current.removeClass('current').addClass('prev');
                             setTimeout(function () {
                                 self.children('li.prev').removeClass('prev');
                             }, 250);
                         }
 
-                        $(this).addClass('current');
-                        var clickedDotIndex = $(this).index();
-                        self.children('li').eq(clickedDotIndex).addClass('current');
-                        startChangeSlides();
-                    });
-                }
-
-                // ==== ARROW NAVIGATION ==== Changing slides after click on arrow animation
-                if (settings.arrows === true) {
-                    self.parent('.free-simple-slider').children('.prev-arrow').on('click', function (event) {
-                        event.preventDefault();
-                        clearInterval(interval);
-                        changeSlides(false);
-                        startChangeSlides();
-                    });
-
-                    self.parent('.free-simple-slider').children('.next-arrow').on('click', function (event) {
-                        event.preventDefault();
-                        clearInterval(interval);
-                        changeSlides(true);
-                        startChangeSlides();
-                    });
-                }
 
 
-                //===== HAMMER PLUGIN WITH SWIPE EVENT =====
-                if (typeof Hammer !== "undefined") {
-                    var hammertime = new Hammer(self[0]);
-                    hammertime.on('swipeleft', function () {
-                        clearInterval(interval);
-                        changeSlides(true);
-                        startChangeSlides();
+                        //==== DOTS CHANGE ====
+                        if (settings.dots === true) {
+                            nextDot = dotsContainer.children('li').eq(next.index());// next.index() <- allows to use the same logic as in slides change
+                            currentDot.removeClass('current');
+                            nextDot.addClass('current');
+                        }
+
                     });
-                    hammertime.on('swiperight', function () {
-                        clearInterval(interval);
-                        changeSlides(false);
-                        startChangeSlides();
-                    });
+
+                    // ==== FIRE FUNCTION INTERWAL startChangeSlides()==== fires "changeSlides" function after time which is set in timer variable
+                    var interval;
+                    function startChangeSlides() {
+                        interval = setInterval(function () {
+                            changeSlides(true);
+                        }, timer);
+                    }
+                    startChangeSlides();
+
+                    // ==== DOT NAVIGATION ==== changing slide with choose animation after click on dot navigation
+                    if (settings.dots === true) {
+                        dotsContainer.children('li').on("click", function () {
+
+                            clearInterval(interval);
+                            dotsContainer.children('li').removeClass('current');
+
+                            if (settings.animation === "basic") {
+                                self.children('li').removeClass('current');
+                            }
+
+                            if (settings.animation === "fade") {
+                                self.children('li.current').addClass('prev').removeClass('current');
+                                setTimeout(function () {
+                                    self.children('li.prev').removeClass('prev');
+                                }, 500);
+                            }
+
+                            if (settings.animation === "slide") {
+                                self.children('li.current').addClass('prev').removeClass('current');
+                                setTimeout(function () {
+                                    self.children('li.prev').removeClass('prev');
+                                }, 250);
+                            }
+
+                            $(this).addClass('current');
+                            var clickedDotIndex = $(this).index();
+                            self.children('li').eq(clickedDotIndex).addClass('current');
+                            startChangeSlides();
+                        });
+                    }
+
+                    // ==== ARROW NAVIGATION ==== Changing slides after click on arrow animation
+                    if (settings.arrows === true) {
+                        self.parent('.free-simple-slider').children('.prev-arrow').on('click', function (event) {
+                            event.preventDefault();
+                            clearInterval(interval);
+                            changeSlides(false);
+                            startChangeSlides();
+                        });
+
+                        self.parent('.free-simple-slider').children('.next-arrow').on('click', function (event) {
+                            event.preventDefault();
+                            clearInterval(interval);
+                            changeSlides(true);
+                            startChangeSlides();
+                        });
+                    }
+
+
+                    //===== HAMMER PLUGIN WITH SWIPE EVENT =====
+                    if (typeof Hammer !== "undefined") {
+                        var hammertime = new Hammer(self[0]);
+                        hammertime.on('swipeleft', function () {
+                            clearInterval(interval);
+                            changeSlides(true);
+                            startChangeSlides();
+                        });
+                        hammertime.on('swiperight', function () {
+                            clearInterval(interval);
+                            changeSlides(false);
+                            startChangeSlides();
+                        });
+                    }
+
                 }
 
             });
@@ -212,6 +215,3 @@ $(document).ready(function () {
 
     }(jQuery));
 });
-
-
-
